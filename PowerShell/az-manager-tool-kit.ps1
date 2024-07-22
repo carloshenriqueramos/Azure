@@ -7,7 +7,7 @@
     Caso exista alguma ferramenta da qual você não utilize, basta comentar a linha que faz referência ou excluí-la antes da execução.
 
 .EXAMPLE
-    Apenas execute o script como Administrador.
+    Execute o script como Administrador.
 
 .NOTES
     Nome: az-manager-tool-kit
@@ -17,7 +17,7 @@
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/az-manager-tool-kit.ps1
 #>
 
 ##### Instala Kit de Ferramentas para Administração do Ambiente Azure
