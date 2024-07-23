@@ -6,17 +6,18 @@
     Habilita o Trafego apenas por Http em todas as Storage Accounts e em seguida, lista todas as Storage Accounts
 
 .EXAMPLE
-    .\enable-https-traffic-only-all-storages.ps1
+    O arquivo TXT com os nomes das Storage Accounts deve conter um nome abaixo do outro
+    .\enable-https-traffic-only-some-storages.ps1
 
 .NOTES
-    Nome: enable-https-traffic-only-all-storages
+    Nome: enable-https-traffic-only-some-storages
     Versão 1.0.0
     Autor: Carlos Henrique | Azure Cloud Specialist | Azure Infrastructure
     Linkedin: https://www.linkedin.com/in/carloshenriqueramos
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/enable-https-traffic-only-all-storages.ps1
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/enable-https-traffic-only-some-storages.ps1
 #>
 
 # Connect ao Azure
@@ -28,26 +29,29 @@ $output = @()
 # Definindo diretorio de destino do export do arquivo CSV
 $outputCsv = "C:\TEMP\Storages.csv"
 
-# Get em todas as storages accounts
-$sas = Get-AzStorageAccount
+$file = Read-Host "Informe o caminho contendo o arquivo TXT com o nome das Storage Accounts"
+
+# Definindo local onde esta o arquivo txt com as Storage Accounts
+$sa = get-content $file
 
 # Analisando cada storage account
 foreach ($sa in $sas) {
 
-    Write-host "Validando se o Https Traffic Only para a Storage Account" $sa.StorageAccountName "esta ativado"
-    
+    # Seleciona as informacoes da Storage Account que esta sendo informada no For
+    $allStorages = Get-AzStorageAccount | Select StorageAccountName, ResourceGroupName, EnableHttpsTrafficOnly | Where {$_.StorageAccountName -like "*$sa*"}
+
     # Verifica se a Storage Account esta com o HttpsTrafficOnly desativado e ativa
-    if($sa.EnableHttpsTrafficOnly -eq $false) {
+    if($allStorages.EnableHttpsTrafficOnly -eq $false) {
             
-        Write-host "Https Traffic Only desativado para a Storage Account $sa.StorageAccountName" -BackgroundColor Red
-        Write-host "Ativando Https Traffic Only para a Storage Account" $sa.StorageAccountName
-        Set-AzStorageAccount -Name $sa.StorageAccountName -ResourceGroupName $sa.ResourceGroupName -EnableHttpsTrafficOnly $true
+        Write-host "Https Traffic Only desativado para a Storage Account $allStoragessa.StorageAccountName" -BackgroundColor Red
+        Write-host "Ativando Https Traffic Only para a Storage Account" $allStorages.StorageAccountName
+        Set-AzStorageAccount -Name $allStorages.StorageAccountName -ResourceGroupName $allStorages.ResourceGroupName -EnableHttpsTrafficOnly $true
 
     }
     
     else {
 
-        Write-host "Https Traffic Only da Storage Account:" $sa.StorageAccountName "ativado" -BackgroundColor Green
+        Write-host "Https Traffic Only da Storage Account:" $allStorages.StorageAccountName "ativado" -BackgroundColor Green
     }      
 
 }
