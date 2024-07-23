@@ -1,9 +1,10 @@
 <#
 .SYNOPSIS
-    Habilita o Trafego apenas por Http em todas as Storage Accounts e em seguida, lista todas as Storage Accounts
+    Habilita o Trafego apenas por Http em algumas Storage Accounts, baseado no fornecimento dos nomes dessas Storages via arquivo TXT e em seguida, lista todas as Storage Accounts
 
 .DESCRIPTION
-    Habilita o Trafego apenas por Http em todas as Storage Accounts e em seguida, lista todas as Storage Accounts
+    Habilita o Trafego apenas por Http em algumas Storage Accounts, baseado no fornecimento dos nomes dessas Storages via arquivo TXT e em seguida, lista todas as Storage Accounts
+
 
 .EXAMPLE
     O arquivo TXT com os nomes das Storage Accounts deve conter um nome abaixo do outro
