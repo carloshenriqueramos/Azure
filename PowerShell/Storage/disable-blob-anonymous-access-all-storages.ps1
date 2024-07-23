@@ -47,7 +47,7 @@ foreach ($sa in $sas) {
     
     else {
 
-        Write-host "Acesso Anonimo ao Blob desativado para a Storage Account:" $sa.StorageAccountName "ativado" -BackgroundColor Green
+        Write-host "Acesso Anonimo ao Blob esta desativado para a Storage Account:" $sa.StorageAccountName -BackgroundColor Green
     }      
 
 }
