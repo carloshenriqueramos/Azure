@@ -34,4 +34,6 @@ $ctx = (Get-AzStorageAccount -ResourceGroupName $resourceGroupName -Name $storag
 New-AzStorageContainer -Name $storageContainerName -Context $ctx -Permission Off
 
 # Lista os Containers da Storage Account
+Write-host ""
+Write-host "Listando os Containers da Storage Account" $storageAccountName
 Get-AzStorageContainer -Context $ctx | Select Name, PublicAccess, LastModified
