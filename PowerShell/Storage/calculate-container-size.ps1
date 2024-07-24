@@ -1,23 +1,22 @@
 <#
 .SYNOPSIS
-    Adiciona IPs para acesso a Storage Account em seguida, lista todos os IPs permitidos
+    Verifica o tamanho de um Container e de seus Blobs
 
 .DESCRIPTION
-    Adiciona IPs para acesso a Storage Account em seguida, lista todos os IPs permitidos
+    Verifica o tamanho de um Container e de seus Blobs
 
 .EXAMPLE
-    O arquivo TXT com todos os IPs que você quer liberar o acesso deve conter um IP abaixo do outro
-    .\add-ips-firewall.ps1
+    .\calculate-container-size.ps1
 
 .NOTES
-    Nome: add-ips-firewall
+    Nome: calculate-container-size
     Versão 1.0.0
     Autor: Carlos Henrique | Azure Cloud Specialist | Azure Infrastructure
     Linkedin: https://www.linkedin.com/in/carloshenriqueramos
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/add-ips-firewall.ps1
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/calculate-container-size.ps1
 #>
 
 # Connect ao Azure
