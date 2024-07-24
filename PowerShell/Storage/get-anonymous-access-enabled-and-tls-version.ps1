@@ -23,27 +23,39 @@
 Connect-AzAccount
 
 # Definindo diretorio de destino do export do arquivo CSV
-$outputCsv = "C:\TEMP\Storages.csv"
+$outputCsv = "C:\TEMP\StoragesAnonymousAccessAndTlsVersion.csv"
 
 # Guardando dados no Array
 $outputData = @()
 
-# Get em todas as storages accounts
-$sas = Get-AzStorageAccount
+# Get de todas as subscriptions habilitadas
+$subs = Get-AzSubscription | Where-Object {$_.State -eq "Enabled"}
 
-# Analisando cada storage account
-foreach ($sa in $sas) {
+# Analisando cada subscription
+foreach ($sub in $subs) {
 
-    # Criando estrutura para para o arquivos de Export
-    $outputObject = [PSCustomObject]@{
-        StorageAccountName     = $sa.StorageAccountName
-        ResourceGroupName      = $sa.ResourceGroupName
-        AnonymousAccessEnabled = $sa.AllowBlobPublicAccess
-        VersionTLS             = ($sa).MinimumTlsVersion
+    # Set the current subscription context
+    Get-AzSubscription -SubscriptionName $sub.Name | Set-AzContext
+
+    # Get em todas as storages accounts
+    $sas = Get-AzStorageAccount
+
+    # Analisando cada storage account
+    foreach ($sa in $sas) {
+
+        # Criando estrutura para para o arquivos de Export
+        $outputObject = [PSCustomObject]@{
+            Subscription           = $sub.Name
+            StorageAccountName     = $sa.StorageAccountName
+            ResourceGroupName      = $sa.ResourceGroupName
+            AnonymousAccessEnabled = $sa.AllowBlobPublicAccess
+            VersionTLS             = ($sa).MinimumTlsVersion
+        }
+
+        # Adicionando os objetos de consulta no Array de saida
+        $outputData += $outputObject
+
     }
-
-    # Adicionando os objetos de consulta no Array de saida
-    $outputData += $outputObject
 
 }
 
