@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-    Cria Storage Account
+    Cria Storage Account com Tags
 
 .DESCRIPTION
-    Cria Storage Account
+    Cria Storage Account com Tags
 
 .EXAMPLE
     .\create-storage-with-tags.ps1
