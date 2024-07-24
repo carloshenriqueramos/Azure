@@ -20,57 +20,60 @@
 #>
 
 # Connect ao Azure
-#Connect-AzAccount
-
-# Solicita as informacoes de Resource Group e nome da Storage Account
-$resourceGroupName = read-host "Informe o nome do Resource Group"
-$storageAccountName = read-host "Informe o nome da Storage Account"
-$location = read-host "Informe a Localizacao do Resource Group e Storage Account"
-$sku = read-host "Informe o SKU da Storage Account"
-
-# Opcoes                                            SkuName 
-#Locally redundant storage (LRS)	                 = Standard_LRS
-#Zone-redundant storage (ZRS)	                    = Standard_ZRS
-#Geo-redundant storage (GRS)	                    = Standard_GRS
-#Read-access geo-redundant storage (RAGRS)	     = Standard_RAGRS
-#Geo-zone-redundant storage (GZRS)	              = Standard_GZRS
-#Read-access geo-zone-redundant storage (RA-GZRS) = Standard_RAGZRS
+Connect-AzAccount
 
 # Definicao de Tags
 $tags = @{
 
-            "ACN"="";
-            "AMBIENTE"="";
-            "ANOCRIACAO"="";
-            "APLICACAO"="";
-            "CC"="";
-            "COMPARTILHADO"="";
-            "DIRETORIA"="";
-            "EMPRESA"=""
-            "INICIATIVA"=""
-         }
+   "ACN"="";
+   "AMBIENTE"="";
+   "ANOCRIACAO"="";
+   "APLICACAO"="";
+   "CC"="";
+   "COMPARTILHADO"="";
+   "DIRETORIA"="";
+   "EMPRESA"=""
+   "INICIATIVA"=""
+}
+
+# Solicita nome da Storage Account
+$storageAccountName = read-host "Informe o nome da Storage Account"
 
 # Valida se o nome desejado da Storage Account esta disponivel
 $saNameAvailable = (Get-AzStorageAccountNameAvailability -Name $storageAccountName).NameAvailable
 
 if ($saNameAvailable) {
-   
+
+   $resourceGroupName = read-host "Informe o nome do Resource Group"
+   $location = read-host "Informe a Localizacao do Resource Group e Storage Account"
+   $sku = read-host "Informe o SKU da Storage Account"
+
+   # Opcoes                                            SkuName 
+   #Locally redundant storage (LRS)	                 = Standard_LRS
+   #Zone-redundant storage (ZRS)	                    = Standard_ZRS
+   #Geo-redundant storage (GRS)	                    = Standard_GRS
+   #Read-access geo-redundant storage (RAGRS)	     = Standard_RAGRS
+   #Geo-zone-redundant storage (GZRS)	              = Standard_GZRS
+   #Read-access geo-zone-redundant storage (RA-GZRS) = Standard_RAGZRS
+
    # Cria Storage Account
    New-AzStorageAccount -ResourceGroupName $resourceGroupName `
-   -Name $storageAccountName `
-   -Location $location `
-   -SkuName $sku `
-   -Kind StorageV2 `
-   -Tag $tags `
-   -EnableHttpsTrafficOnly $true `
-   -AllowBlobPublicAccess $false `
-   -MinimumTlsVersion TLS1_2
+      -Name $storageAccountName `
+      -Location $location `
+      -SkuName $sku `
+      -Kind StorageV2 `
+      -Tag $tags `
+      -EnableHttpsTrafficOnly $true `
+      -AllowBlobPublicAccess $false `
+      -MinimumTlsVersion TLS1_2
 
-   Write-host "Storage Account" $storageAccountName "criada!" -BackgroundColor Green
+      Write-host "Storage Account" $storageAccountName "criada!" -BackgroundColor Green
 
-} else
+   } 
    
-   {
-      Write-host "Nome" $storageAccountName "ja esta em uso, por favor escolha um novo nome" -BackgroundColor Red
-      Exit 1
-   }
+   else
+      
+      {
+         Write-host "Nome" $storageAccountName "ja esta em uso, por favor escolha outro nome" -BackgroundColor Red
+         Exit 1
+      }
