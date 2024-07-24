@@ -20,7 +20,7 @@
 #>
 
 # Connect ao Azure
-Connect-AzAccount
+#Connect-AzAccount
 
 # Guardando dados no Array
 $output = @()
@@ -28,38 +28,51 @@ $output = @()
 # Definindo diretorio de destino do export do arquivo CSV
 $outputCsv = "C:\TEMP\ResourceGroupsEmpty.csv"
 
-# Get de todos os Resource Groups
-$rgs = Get-AzResourceGroup
+# Get de todas as subscriptions habilitadas
+$subs = Get-AzSubscription | Where-Object {$_.State -eq "Enabled"}
 
-# Analisando cada Resource Group
-foreach ($rg in $rgs){
-	
-	# Obtem os recursos existentes no Resource Group
-	$resources = Get-AzResource -ResourceGroupName $rg.ResourceGroupName 
-	
-	# Valida se o Resource Group esta vazio
-	if ($resources -eq $null) {
-			
-		# Analisando cada Resource Group Vazio
-		ForEach ($rgempty in $rg){
+# Analisando cada subscription
+foreach ($sub in $subs) {
 
-			# Criando estrutura para para o arquivo de Export
-			$outputObject = [PSCustomObject]@{
+	# Set the current subscription context
+    Get-AzSubscription -SubscriptionName $sub.Name | Set-AzContext
+
+	# Get de todos os Resource Groups
+	$rgs = Get-AzResourceGroup
+
+	# Analisando cada Resource Group
+	foreach ($rg in $rgs){
+		
+		# Obtem os recursos existentes no Resource Group
+		$resources = Get-AzResource -ResourceGroupName $rg.ResourceGroupName 
+		
+		# Valida se o Resource Group esta vazio
+		if ($resources -eq $null) {
 				
-				ResourceGroupEmpty = $rg.ResourceGroupName
+			# Analisando cada Resource Group Vazio
+			ForEach ($rgempty in $rg){
+
+				# Criando estrutura para para o arquivo de Export
+				$outputObject = [PSCustomObject]@{
+					
+					Subscription	   = $sub.Name
+					ResourceGroupEmpty = $rg.ResourceGroupName
+
+				}
+				
+				# Adicionando os objetos de consulta no Array de saida
+				$output += $outputObject 
 
 			}
-			
-			# Adicionando os objetos de consulta no Array de saida
-			$output += $outputObject 
-
-		}
-	
-	}
 		
+		}
+			
+	}
+
 }
 
 # Export para o arquivo CSV
 $output | Export-Csv -Path $outputCsv -NoTypeInformation
 
+Write-Output ""
 Write-Output "Export completed. CSV file saved to $outputCsv"
