@@ -1,29 +1,29 @@
 ﻿<#
 .SYNOPSIS
-    Lista a versão de TLS e se o Acesso Público ao Blob é Permitido
+    Lista a versão de TLS, se o Acesso Publico ao Blob e Permitido e se o Https Traffic Only esta ou nao habilitado
 
 .DESCRIPTION
-    Lista a versão de TLS e se o Acesso Público ao Blob é Permitido
+    Lista a versão de TLS, se o Acesso Publico ao Blob e Permitido e se o Https Traffic Only esta ou nao habilitado
 
 .EXAMPLE
-    Execute o script como Administrador.
+    .\get-anonymous-access-enabled-traffic-https-and-tls-version
 
 .NOTES
-    Nome: get-anonymous-access-enabled-and-tls-version
+    Nome: get-anonymous-access-enabled-traffic-https-and-tls-version
     Versão 1.0.0
     Autor: Carlos Henrique | Azure Cloud Specialist | Azure Infrastructure
     Linkedin: https://www.linkedin.com/in/carloshenriqueramos
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/get-anonymous-access-enabled-and-tls-version.ps1
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/get-anonymous-access-enabled-traffic-https-and-tls-version.ps1
 #>
 
 # Connect ao Azure
-Connect-AzAccount
+#Connect-AzAccount
 
 # Definindo diretorio de destino do export do arquivo CSV
-$outputCsv = "C:\TEMP\StoragesAnonymousAccessAndTlsVersion.csv"
+$outputCsv = "C:\TEMP\StoragesAnonymousAccessTlsVersionHttpsTraffic.csv"
 
 # Guardando dados no Array
 $outputData = @()
@@ -43,13 +43,14 @@ foreach ($sub in $subs) {
     # Analisando cada storage account
     foreach ($sa in $sas) {
 
-        # Criando estrutura para para o arquivos de Export
+        # Criando estrutura para o arquivo de Export
         $outputObject = [PSCustomObject]@{
             Subscription           = $sub.Name
             StorageAccountName     = $sa.StorageAccountName
             ResourceGroupName      = $sa.ResourceGroupName
             AnonymousAccessEnabled = $sa.AllowBlobPublicAccess
-            VersionTLS             = ($sa).MinimumTlsVersion
+            HttpsTrafficOnly       = $sa.EnableHttpsTrafficOnly
+            TLSVersion             = ($sa).MinimumTlsVersion
         }
 
         # Adicionando os objetos de consulta no Array de saida
