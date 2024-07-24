@@ -22,7 +22,7 @@
 # Connect ao Azure
 Connect-AzAccount
 
-# Solciita as informacoes de Resource Group e nome da Storage Account
+# Solicita as informacoes de Resource Group e nome da Storage Account
 $resourceGroupName = read-host "Informe o nome do Resource Group"
 $storageAccountName = read-host "Informe o nome da Storage Account"
 

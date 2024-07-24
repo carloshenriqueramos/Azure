@@ -29,6 +29,7 @@ $output = @()
 # Definindo diretorio de destino do export do arquivo CSV
 $outputCsv = "C:\TEMP\Storages.csv"
 
+# Solicita as informacoes de Resource Group, nome da Storage Account e arquivo com os IPs
 $resourceGroupName = read-host "Informe o nome do Resource Group"
 $storageAccountName = read-host "Informe o nome da Storage Account"
 $file = Read-Host "Informe o caminho contendo o arquivo TXT com os IPs a serem adicionados ao Firewall"
