@@ -52,7 +52,7 @@ foreach ($sub in $subs) {
 			# Analisando cada Resource Group Vazio
 			ForEach ($rgempty in $rg){
 
-				# Criando estrutura para para o arquivo de Export
+				# Criando estrutura para o arquivo de Export
 				$outputObject = [PSCustomObject]@{
 					
 					Subscription	   = $sub.Name
