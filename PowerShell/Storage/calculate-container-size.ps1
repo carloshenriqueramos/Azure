@@ -19,8 +19,22 @@
     https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/calculate-container-size.ps1
 #>
 
+# Funcao para determinar se o resultado da variavel tamanho e em B, KB, MB, GB, TB ou PB
+Function Get-Format {
+    Begin{
+        $sufixo = @("B", "KB", "MB", "GB", "TB", "PB")
+    }
+    Process {
+
+        for ($i=0; $tamanho -ge 1024 -and $i -lt $sufixo.Length; $i++) {
+          $tamanho = $tamanho / 1024
+        }
+        return "" + [System.Math]::Round($tamanho,2) + " " + $sufixo[$i]
+    }
+}
+
 # Connect ao Azure
-#Connect-AzAccount
+Connect-AzAccount
 
 # Solicita as informacoes de Resource Group e nome da Storage Account
 $resourceGroupName = read-host "Informe o nome do Resource Group"
@@ -48,20 +62,6 @@ $blobs | ForEach-Object {
 Write-Host ""
 Write-Host "Listando os Blobs existentes no Container" $containerName
 $blobs | select Name, Length
-
-# Funcao para determinar se o resultado da variavel tamanho e em B, KB, MB, GB, TB ou PB
-Function Get-Format {
-  Begin{
-      $sufixo = @("B", "KB", "MB", "GB", "TB", "PB")
-  }
-  Process {
-      # New for loop
-      for ($i=0; $tamanho -ge 1024 -and $i -lt $sufixo.Length; $i++) {
-        $tamanho = $tamanho / 1024
-      }
-      return "" + [System.Math]::Round($tamanho,2) + " " + $sufixo[$i]
-  }
-}
 
 Write-Host ""
 Write-Host "Tamanho dos Blobs no Container" $containerName "e de:" (Get-Format)
