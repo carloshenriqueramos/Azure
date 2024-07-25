@@ -16,7 +16,7 @@
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Storage/move-resources-between-resource-groups.ps1
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Resource%20Group/move-resources-between-resource-groups.ps1
 #>
 
 # Connect ao Azure
