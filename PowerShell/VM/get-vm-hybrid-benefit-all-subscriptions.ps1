@@ -44,10 +44,11 @@ foreach ( $sub in $subs ){
     foreach ($vm in $vms) {
 
         # Definindo as Propriedades da VM a serem inseridas no Relatorio
-        $props = $([ordered]@{
+        $vmProps = $([ordered]@{
+            Subscription = $sub.Name      
+            ResourceGroup = $vm.ResourceGroupName                  
             VMname = $vm.Name
             VMSize = $vm.hardwareprofile.VmSize
-            ResourceGroup = $vm.ResourceGroupName
             Region = $vm.Location
             LicenseType = $vm.LicenseType
             OsType = $vm.storageprofile.osdisk.ostype
@@ -55,14 +56,13 @@ foreach ( $sub in $subs ){
             Offer = $vm.storageprofile.imagereference.Offer
             Sku = $vm.storageprofile.imagereference.Sku
             CreationDate = $vm.TimeCreated
-            Subscription = $sub.Name
         })
 
         # Criando estrutura para o arquivo de Export
-        $ServiceObject = New-Object -TypeName PSObject -Property $props
+        $outputObject = New-Object -TypeName PSObject -Property $vmProps
 
         # Adicionando os objetos de consulta no Array de saida
-        $output += $serviceobject
+        $output += $outputObject
     }
 }
 
