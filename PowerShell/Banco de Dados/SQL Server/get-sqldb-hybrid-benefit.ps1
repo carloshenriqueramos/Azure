@@ -20,7 +20,7 @@
 #>
 
 # Connect ao Azure
-#Connect-AzAccount
+Connect-AzAccount
 
 # Guardando dados no Array
 $sqlDbs = @()
