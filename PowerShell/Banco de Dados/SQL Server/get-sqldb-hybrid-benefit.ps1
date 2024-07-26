@@ -16,7 +16,7 @@
     E-mail: carlos.hramos@outlook.com
 
 .LINK
-    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Banco%20de%20Dados/get-sqldb-hybrid-benefit.ps1
+    https://github.com/carloshenriqueramos/Azure/blob/main/PowerShell/Banco%20de%20Dados/SQL%20Server/get-sqldb-hybrid-benefit.ps1
 #>
 
 # Connect ao Azure
