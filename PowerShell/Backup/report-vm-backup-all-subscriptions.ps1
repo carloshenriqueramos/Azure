@@ -54,7 +54,7 @@ foreach ($sub in $subs) {
             # Valida se a VM possui Backup habilitado
             if ([string]::IsNullOrEmpty($statusBackupVm.VaultId)) {
                 
-                # Criando estrutura para o arquivo de Export
+                # Criando estrutura para o arquivo de Export de VMs sem Backup
 				$vmWithoutBackup = [PSCustomObject]([ordered]@{
                     Subscription           = $sub.Name 
                     ResourceGroupVm        = $vm.ResourceGroupName
@@ -75,7 +75,7 @@ foreach ($sub in $subs) {
                 $container = Get-AzRecoveryServicesBackupContainer -ContainerType AzureVM -VaultId $vmBackupVault.ID -FriendlyName $vm.Name
                 $backupItem = Get-AzRecoveryServicesBackupItem -Container $container -WorkloadType AzureVM -VaultId $vmBackupVault.ID
 
-                # Criando estrutura para o arquivo de Export
+                # Criando estrutura para o arquivo de Export de VMs com Backup
 				$vmWithBackup = [PSCustomObject]([ordered]@{
                     Subscription           = $sub.Name 
                     ResourceGroupVm        = $vm.ResourceGroupName
