@@ -1,0 +1,1 @@
+Get-AzureRmResource | Select Type, Name, ResourceGroupName | where Tags -eq $null | Export-Csv C:\Sem_Tags.csv
