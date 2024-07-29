@@ -21,6 +21,8 @@ Get-AzResource -TagName "Environment"
 # Lista todos os recursos que possuem determinada Tag
 Get-AzResource -TagValue "Production"
 
+# Lista todos os recursos que não possuem Tags
+Get-AzResource | Select Type, Name, ResourceGroupName | where Tags -eq $null | Export-Csv C:\Sem_Tags.csv
 
 # ----------------------------------------------------------------------------
 
