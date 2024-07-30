@@ -20,7 +20,7 @@
 #>
 
 # Connect ao Azure
-#Connect-AzAccount
+Connect-AzAccount
 
 # Definindo diretorio de destino do export do arquivo CSV
 $outputCsv = "C:\TEMP\StoragesAnonymousAccessTlsVersionHttpsTraffic.csv"
