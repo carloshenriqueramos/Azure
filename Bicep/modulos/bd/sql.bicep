@@ -18,14 +18,14 @@ param location string = deployment().location
 var rgName = 'rg-bd-${location}-poc-001'
 
 var sqlsrvName = 'sql-srv-poc-${location}-001'
-var sqlUser = 'sqladminpoc'
-var sqlPass = 'w?RUWB6yzw89v91i'
+var sqlUser = ''
+var sqlPass = ''
 
 // Verificar as edicoes das databases por regiao - az sql db list-editions -l eastus -o table
-var dbName = 'db_mtp_authorizer'
-var dbEdition = 'Basic'
-var dbObjective = 'Basic'
-var dbMaxSize = '2147483648' //Valor em Bytes - https://convertlive.com/pt/u/converter/gigabytes/em/bytes#1
+var dbName = ''
+var dbEdition = ''
+var dbObjective = ''
+var dbMaxSize = '' //Valor em Bytes - https://convertlive.com/pt/u/converter/gigabytes/em/bytes#1
 
 // Cria o Resource Group
 resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
