@@ -1,0 +1,121 @@
+#Log into Azure
+az login
+
+#Select the correct subscription
+az account set --subscription "SUBNAME"
+
+#Create a resource groups
+$rgMonitoring="rg-monitoring-poc"
+$rgBds="rg-bds-poc"
+$rgVms="rg-vms-poc"
+$rgAks="rg-aks-poc"
+$rgMsftAks="rg-msft-aks-poc"
+$rgNetwork="rg-network-poc"
+
+$rgs = @(
+    "rg-monitoring-poc",
+    "rg-bds-poc",
+    "rg-vms-poc",
+    "rg-aks-poc",
+    "rg-network-poc"
+)
+
+$location='brazilsouth'
+
+#Tags
+$tags=@(
+    "AMBIENTE=POC", 
+    "DATACRIACAO=12-07-2024", 
+    "APLICACAO=",
+    "EMPRESA="
+)
+
+#Name of resources
+$pipElbVms="pip-elb-vms-poc"
+$elbVms="elb-vms-poc"
+$feElbVms="fe-01-elb-vms-poc"
+$bePollElbVMs="bep-vms-poc"
+
+$logAnalyticsName="la-wks-poc"
+
+$vnetName="vnet-poc"
+$subnetVmsName="subnet-vms-poc"
+$subnetAksName="subnet-aks-poc"
+$subnetCassandraName="subnet-ami-cassandra-poc"
+
+$vnetPrefix="10.0.0.0/8"
+$subnetVmsPrefix="10.0.0.0/24"
+$subnetAksPrefix="10.0.1.0/27"
+$subnetCassandraPrefix="10.0.1.32/27"
+
+$nsgSubnetVmsName="nsg-$subnetVmsName-$vnetName"
+
+$natGwName="nat-gw-$vnetName"
+$pipNatGw="pip-$natGwName"
+
+$vm1Name="injetor-01-poc"
+$vm1Size="Standard_B2ms"
+$usrVm="vmadmin"
+$passVm="P0cchr@admin89"
+
+$aksName="aks-poc"
+$nodSize="Standard_D2_v2"
+
+$sqlSrvName="sql-srv-poc"
+$sbSqlName=""
+$usrSql="sqladmin"
+$passSql="P0cchr@admin89"
+
+#Create Resource Groups
+foreach ($rg in $rgs){
+    az group create --name $rg --location $location --tags $tags
+}
+
+#Create NSG
+az network nsg create -g $rgNetwork -n $nsgSubnetVmsName --location $location --tags $tags
+az network nsg rule create -g $rgNetwork --nsg-name $nsgSubnetVmsName -n AllowSSH --priority 100 --access Allow --protocol Tcp --direction Inbound --source-address-prefix "*" --source-port-range "*" --destination-address-prefix "*" --destination-port-range 22
+az network nsg rule create -g $rgNetwork --nsg-name $nsgSubnetVmsName -n AllowRebatedor --priority 101 --access Allow --protocol Tcp --direction Inbound --source-address-prefix "*" --source-port-range "*" --destination-address-prefix "*" --destination-port-range 6510
+
+#Create a Nat Gateway
+az network public-ip create -n $pipNatGw -g $rgNetwork --sku Standard --version IPv4 --tags $tags
+az network nat gateway create -g $rgNetwork -n $natGwName --location $location --public-ip-addresses $pipNatGw --idle-timeout 4 --tags $tags
+
+#Create a virtual network and subnets config
+az network vnet create -n $vnetName -g $rgNetwork --location $location --address-prefix $vnetPrefix --subnet-name $subnetVmsName --subnet-prefixes $subnetVmsPrefix --network-security-group $nsgSubnetVmsName --tags $tags
+az network vnet subnet create -g $rgNetwork --vnet-name $vnetName -n $subnetAksName --address-prefixes $subnetAksPrefix
+az network vnet subnet create -g $rgNetwork --vnet-name $vnetName -n $subnetCassandraName --address-prefixes $subnetCassandraPrefix
+az network vnet subnet update -g $rgNetwork --vnet-name $vnetName -n $subnetVmsName --nat-gateway $natGwName
+
+#Create External Load Balancer of vms
+az network public-ip create -n $pipElbVms -g $rgVms --sku Standard --version IPv4 --tags $tags
+az network lb create -g $rgVms -n $elbVms --location $location --sku Standard --public-ip-address $pipElbVms --frontend-ip-name $feElbVms --backend-pool-name $bePollElbVMs --tags $tags
+az network lb inbound-nat-rule create -g $rgVms --lb-name $elbVms --name "ssh-$vm1Name" --protocol Tcp --frontend-port 9020 --backend-port 22 --frontend-ip $feElbVms
+
+#Create a virtual machine
+#Find Images - https://learn.microsoft.com/en-us/azure/virtual-machines/linux/cli-ps-findimage
+$subnetVmsId=$(az network vnet subnet show -g $rgNetwork --vnet-name $vnetName -n $subnetVmsName --query id -o tsv)
+
+az network nic create -n "$vm1Name-nic" -g $rgVms --location $location --vnet-name $vnetName --subnet $subnetVmsId --accelerated-networking false --private-ip-address-version IPv4 --tags $tags
+az network nic ip-config address-pool add -g $rgVms --nic-name "$vm1Name-nic" --address-pool $bePollElbVMs --ip-config-name "ipconfig1" --lb-name $elbVms
+az network nic ip-config inbound-nat-rule add -g $rgVms --nic-name "$vm1Name-nic" --inbound-nat-rule "ssh-$vm1Name" --ip-config-name "ipconfig1" --lb-name $elbVms
+
+az vm create -g $rgVms -n $vm1Name --location $location --nics "$vm1Name-nic" --image Canonical:0001-com-ubuntu-server-jammy:22_04-lts-gen2:latest --authentication-type password --admin-username $usrVm --admin-password $passVm --size $vm1Size --tags $tags
+
+#Create Log Analytics
+az monitor log-analytics workspace create -n $logAnalyticsName -g $rgMonitoring --location $location --tags $tags
+$laWksId=$(az monitor log-analytics workspace show -n $logAnalyticsName -g $rgMonitoring --query id -o tsv)
+
+#Create AKS
+$subnetAksId=$(az network vnet subnet show -g $rgNetwork --vnet-name $vnetName -n $subnetAksName --query id -o tsv)
+az aks create -g $rgAks -n $aksName --location $location --node-count 1 --os-sku Ubuntu --enable-addons monitoring --workspace-resource-id $laWksId --network-plugin kubenet --vnet-subnet-id $subnetAksId --service-cidr 192.168.0.0/16 --dns-service-ip 192.168.0.10 --node-resource-group $rgMsftAks --tags $tags
+CRIAR NODE DE USUARIO
+
+#Create Azure SQL Server
+az sql server create -g $rgBds -n $sqlSrvName --admin-user $usrSql --admin-password $passSql --location $location --enable-public-network false
+Vincular a rede de VMs e AKS
+az sql db create -g $rgBds -n $sbSqlName --server $sqlSrvName --catalog-collation SQL_Latin1_General_CP1_CI_AS --backup-storage-redundancy Local --zone-redundant false --service-objective Basic --tags $tags
+CRIAR PRIVATE ENDPOINT
+
+#Create Azure Cache for Redis
+
+#Create Azure Managed Instance for Apache Cassandra

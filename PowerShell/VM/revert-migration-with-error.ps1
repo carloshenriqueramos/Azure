@@ -1,0 +1,1 @@
+az vm convert --resource-group RGNAME --name VMNAME --subscription SUBID
