@@ -28,6 +28,9 @@ $users = "user1@dominio.com","user2@dominio.com"
 # IDs das Subscriptions
 $subs = "ID1","ID2"
 
+# Permissao a ser atribuida
+$role = "Reader"
+
 # Guardando dados no Array
 $output = @()
 
@@ -40,7 +43,7 @@ foreach($sub in $subs){
     foreach ($user in $users){
 
         # Atribuindo a permissao
-        New-AzRoleAssignment -SignInName $user -RoleDefinitionName "Reader" -Scope "/subscriptions/$sub"
+        New-AzRoleAssignment -SignInName $user -RoleDefinitionName $role -Scope "/subscriptions/$sub"
        
         # Get das Permissoes do Usuario
         $permission = Get-AzRoleAssignment -SignInName $user -Scope "/subscriptions/$sub" | Select DisplayName, SignInName, RoleDefinitionName 
