@@ -19,4 +19,4 @@ foreach($webapp in $webapps){
         Type = $webapp.Type
         })
 }
-$output | where-object {$_.hostnames -like "*votorantim*"} | ft 
+$output | where-object {$_.hostnames -like "*dominio*"} | ft 
