@@ -85,3 +85,41 @@ $spApplicationPermissions = Get-MgServicePrincipalAppRoleAssignment -ServicePrin
 $spApplicationPermissions | ForEach-Object {
     Remove-MgServicePrincipalAppRoleAssignment -ServicePrincipalId $_.PrincipalId -AppRoleAssignmentId $_.Id
 }
+
+#### ------------------------------
+Connect-AzureAD -TenantId "e0397d98-3001-4e83-a25f-3327178c3e19"
+
+$appName = "chrteste"
+$user = "adm.carloshr_hotmail.com#EXT#@admcarloshrhotmail.onmicrosoft.com"
+
+$userId = (Get-AzureADUser | where {$_.UserPrincipalName -eq $user}).ObjectId
+
+$samlApp = New-AzureADApplication -DisplayName $appName `  
+                       -IdentifierUris "https://myapp.domain.com" `  
+                       -ReplyUrls "https://myapp.domain.com/sso"
+  
+#####
+Add-AzureADApplicationOwner -ObjectId $samlApp.ObjectId -RefObjectId $userId
+
+
+New-AzureADServicePrincipal -DisplayName $appName `  
+                       -IdentifierUris "https://myapp.domain.com" `  
+                       -ReplyUrls "https://myapp.domain.com/sso"
+
+# -----------
+
+$appName = "SAMLAppTest1"  
+$samlApp = New-AzureADApplication -DisplayName $appName `  
+                       -IdentifierUris "http://mynewapp.contoso.com" `  
+                       -SamlMetadataURL "http://mynewapp.contoso.com/metadata.xml" `  
+                       -ReplyUrls "http://mynewapp.contoso.com/finishLogin"  
+  
+Get-AzureADApplication -SearchString $appName  
+  
+New-AzureADServicePrincipal -AccountEnabled $true `  
+                            -AppId $samlApp.AppId `  
+                            -AppRoleAssignmentRequired $true `  
+                            -DisplayName $appName `  
+                            -Tags {WindowsAzureActiveDirectoryIntegratedApp}  
+  
+Get-AzureADServicePrincipal -SearchString $appName 
