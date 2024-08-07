@@ -22,14 +22,10 @@
 # Connect ao Azure
 Connect-AzAccount
 
-# UPN dos usuarios
-$users = "user1@dominio.com","user2@dominio.com"
-
-# IDs das Subscriptions
-$subs = "ID1","ID2"
-
-# Permissao a ser atribuida
-$role = "Reader"
+# Solicita as informacoes
+$subs = read-host "Informe o nome da Subscription"
+$role = Read-Host "Informe a Role a ser Atribuida"
+$users = read-host "Informe o nome dos Usuarios ou Grupo"
 
 # Guardando dados no Array
 $output = @()
@@ -37,7 +33,7 @@ $output = @()
 # Analisando cada subscription
 foreach($sub in $subs){
 
-    Get-AzSubscription -SubscriptionId $sub | Set-AzContext
+    Get-AzSubscription -SubscriptionName $sub | Set-AzContext
     
     # Analisando cada Usuario
     foreach ($user in $users){
